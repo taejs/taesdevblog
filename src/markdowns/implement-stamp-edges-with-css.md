@@ -4,7 +4,7 @@ date: "2019-05-05"
 title: "[CSS] background 프로퍼티를 이용한 우표 귀퉁이 구현"
 ---
 
-30daysofCSSgirls의 9일차 활동인 우표 귀퉁이 구현에 대해서 설명해보고자한다. (https://css.codinggirls.sg/day-9-10--stamp/)
+30daysofCSSgirls의 9일차 활동인 우표 귀퉁이 구현에 대해서 설명해보고자한다.
 
 알아보니 우표를 전지에서 떼어내기 쉽도록 우표와 우표사이에 뚫어놓은 구멍 부분을 천공이라고 부른다고 한다.
 이 천공을 CSS의 background 프로퍼티로 표현해내는 것이 가능하다.
@@ -40,10 +40,35 @@ https://codepen.io/ta2rim/pen/dEyryK
 이 원리를 이용하면 radial-gradient를 이용해 원모양을 표현할 수 있다.
 이제 background의 속성들을 살펴볼 차례이다
 
-## background properties
-현재는 다음과 같은 background properties들이 존재한다.
-`background-color`, `background-image`, `background-repeat`, `background-attachment`, `background-position`
-천공을 만들어내기 위해 사용할 속성은 `background-position`과 `background-repeat`이다.
+## background properties로 도트 무늬 만들기
+현재는 다양한 [background properties (CSS Backgrounds and Borders Module Level 3)](https://www.w3.org/TR/css-backgrounds-3/)들이 존재한다.
+천공을 만들어내기 위해 사용할 속성은 `background-size`과 `background-repeat`이다.
+
+background-repeat 의 값은 기본적으로 repeat이기 때문에 따로 설정해 줄 것은 없으며,
+`radial-gradient(transparent, transparent 50%, blue 50%, blue)`의 형태로 딱 콘텐츠 기준 50%가 되는 원을 만들고 background-size를 변경하면 확인이 가능하다.
+
+콘텐츠 사이즈를 100px 100px이라고 가정하고
+100px 100px을 했을때는 원 1개, 50px 50px일 때는 원이 4개, 100px 50px일때는 가로가 긴 타원 2개가 나오는데
+각 가로 세로 비율에 맞게 줄어든 것이 `background-repeat`속성 때문에 반복되어 나오니 
+5x5도트 무늬를 만들때는 20px 20px로 설정하면 되는 것이다.
+
+
+`콘텐츠 width / 도트갯수 = background-size width`  
+`콘텐츠 height / 도트갯수 = background-size height`
+
+## 둘을 조합하여 천공 만들기
+만들어진 n줄 도트의 `backgrond-position`을 조정해주면 천공이 완성된다.
+background-position을 `calc(-0.5 * n px)`의 형태로 만들어주면 된다.
+
+0.5라는 상수는 원을 얼만큼 보여줄지를 결정한다 1을 곱하면 원의 전체, 0.5는 원의 절반 0.3 은 3/10 이다.
+
+https://codepen.io/ta2rim/pen/ZNYWNW
+
+이제 이렇게 된 상태에서 내부를 다양한 방법으로 채워주면 완성된다.
+
+[css coding girls](https://css.codinggirls.sg/day-9-10--stamp/)의 경우에는 linear-gradient로 같은 background 프로퍼티에 안에 사각형을 만들었고, `::after` pseudo element를 이용하거나 한개의 element를 추가하는 방식도 생각해 볼 수 있을 것 같다.
+
+
 
 
 
