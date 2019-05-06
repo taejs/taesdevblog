@@ -1,7 +1,7 @@
 module.exports = {
   siteMetadata: {
-    title: `Gatsby Default Starter`,
-    description: `Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.`,
+    title: `<Tae'sDevBlog>`,
+    description: `What is "development"? I think it means all behaviors occur in tech across the board`,
     author: `@gatsbyjs`,
   },
   plugins: [
@@ -31,7 +31,7 @@ module.exports = {
       resolve : `gatsby-source-filesystem`,
       options : {
         name : `markdown-pages`,
-        path : `${__dirname}/markdowns`
+        path : `${__dirname}/src/markdowns`
       }
     },
     `gatsby-transformer-remark`

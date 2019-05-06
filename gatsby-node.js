@@ -10,7 +10,7 @@ const path = require('path')
 exports.createPages = ({actions, graphql}) => {
     const {createPage} = actions
 
-    const blogPostTemplate = path.resolve(`템플릿 파일`)
+    const blogPostTemplate = path.resolve(`./markdown-template.js`)
 
     return graphql(`
     {
@@ -32,7 +32,7 @@ exports.createPages = ({actions, graphql}) => {
           return Promise.reject(result.errors)
       }
       result.data.allMarkdownRemark.edges.forEach(({node}) => {
-          cratePage({
+          createPage({
               path : node.frontmatter.path,
               component : blogPostTemplate,
               context : {}
