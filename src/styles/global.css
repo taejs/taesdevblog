@@ -91,8 +91,21 @@ div.post h1{
 
 div.post h2{
 	margin: 30px 0px;
-	font-weight: 500;
+	font-weight: 600;
 	font-size: 2rem;
+	color : #444;
+}
+div.post h3{
+	font-weight: 500;
+	font-size:1.5rem;
+	color : #555;
+}
+
+div.post img{
+	display: block;
+	margin:20px auto;
+	max-width:500px;
+	object-fit: cover;
 }
 div.post p{
 	line-height: 1.7rem;

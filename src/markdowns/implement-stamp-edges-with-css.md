@@ -6,7 +6,7 @@ title: "[CSS] background 프로퍼티를 이용한 우표 귀퉁이 구현"
 
 30daysofCSSgirls의 9일차 활동인 우표 귀퉁이 구현에 대해서 설명해보고자한다.
 
-알아보니 우표를 전지에서 떼어내기 쉽도록 우표와 우표사이에 뚫어놓은 구멍 부분을 천공이라고 부른다고 한다.
+알아보니 우표를 전지에서 떼어내기 쉽도록 우표와 우표사이에 뚫어놓은 구멍 부분을 천공이라고 부른다고 한다.  
 이 천공을 CSS의 background 프로퍼티로 표현해내는 것이 가능하다.
 알아야 할 것들을 정리해 놓았으니 알고 싶은 부분만 읽어도 충분할 것 같다.
 먼저 예제를 살펴보도록 하겠다.
@@ -18,7 +18,7 @@ https://codepen.io/ta2rim/pen/ywaWjv
 
 ## radial-gradient 는 무엇인가?
 문법적으로는 [functional notations](https://www.w3.org/TR/css-values-4/#functional-notation)에 속한다.
-좀더 복잡하거나 특별한 처리가 필요한 값들을 컴포넌트화 해놓은 값(value)라고 할 수 있다.
+좀더 복잡하거나 특별한 처리가 필요한 값들을 컴포넌트화 해놓은 값이라고 할 수 있다.
 
 ![MDN radial-graident](https://mdn.mozillademos.org/files/3795/radial%20gradient.png)
 표현적으로는 중심점, 중단 모양(ending shape), 2개 이상의 색상지점을 사용해 방사형 그라디언트를 나타낼 수 있다.
