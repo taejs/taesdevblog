@@ -1,7 +1,7 @@
 ---
 path: "/implement-stamp-edges-with-css"
 date: "2019-05-05"
-title: "[CSS] background 프로퍼티를 이용한 우표 귀퉁이 구현"
+title: "background 프로퍼티를 이용한 우표 귀퉁이 구현"
 ---
 
 30daysofCSSgirls의 9일차 활동인 우표 귀퉁이 구현에 대해서 설명해보고자한다.

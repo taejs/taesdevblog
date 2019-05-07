@@ -1,10 +1,12 @@
 div.wrap{
-  max-width:860px;
+  max-width: 42rem;
+  padding: 2.625rem 1.3125rem;
   margin:0 auto;
+  padding:20px;
 }
 
 header{
-  padding: 20px 0px;
+  margin-bottom:20px;
 }
 
 header h1 a,
