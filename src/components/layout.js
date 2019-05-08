@@ -27,7 +27,7 @@ const Layout = ({ children }) => (
     render={data => (
       <div class="wrap">
         <Header siteTitle={data.site.siteMetadata.title} />
-        {window.location.pathname === '/' ? <Profile /> : ''}
+        <Profile />
         <div>
           <main>{children}</main>
           <footer>
