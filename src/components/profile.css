@@ -1,0 +1,49 @@
+.profile{
+    padding:30px;
+}
+
+.profile::after {
+    content :'';
+    display: block;
+    clear:both;
+}
+
+.profile img {
+    margin:0;
+}
+.profile-pic-wrapper{
+    width:120px;
+    height:120px;
+    border-radius: 10px;
+}
+.profile-name{
+    font-weight: 900;
+    font-size:2rem;
+}
+.profile-name strong{
+    color:#425ff4;
+}
+.profile-comment{
+    font-family: 'Consolas';
+}
+.profile-link {
+    margin-left:0.5rem;
+}
+.profile header {
+    display: flex;
+    align-items: center;
+}
+.profile .icon{
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    background-size: 100%;
+    text-indent: -9999px;
+}
+.icon.github{
+    background-image: url(https://camo.githubusercontent.com/7710b43d0476b6f6d4b4b2865e35c108f69991f3/68747470733a2f2f7777772e69636f6e66696e6465722e636f6d2f646174612f69636f6e732f6f637469636f6e732f313032342f6d61726b2d6769746875622d3235362e706e67);
+    
+}
+.icon.twitter{
+    background-image:url(https://user-images.githubusercontent.com/41318449/57386791-a0ed6b00-71a4-11e9-98c5-3cdd529e4fbb.png)
+}

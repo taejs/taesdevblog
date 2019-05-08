@@ -18,7 +18,6 @@ const IndexPage = ({
   return(
     <Layout>
     <SEO title="Home" keywords={[`gatsby`, `application`, `react`]} />
-    <h1 style={{color : `#666`, fontSize : '1.6rem'}}>Posts</h1>
     <div class="posts">{Posts}</div>
   </Layout>
 )}  

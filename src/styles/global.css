@@ -133,3 +133,15 @@ code{
 div.post a{
 	text-decoration: underline;
 }
+
+.row{
+	display: flex;
+	box-sizing:border-box;
+}
+.col{
+	box-sizing: border-box;
+}
+
+.col + .col {
+	margin-left:1rem;
+}

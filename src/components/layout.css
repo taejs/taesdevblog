@@ -1,8 +1,7 @@
 div.wrap{
-  max-width: 42rem;
+  max-width: 50rem;
   padding: 2.625rem 1.3125rem;
   margin:0 auto;
-  padding:20px;
 }
 
 header{
@@ -19,7 +18,7 @@ header h1 a:link
 }
 
 header h1 {
-  color : #53bcba;
+  color : #4463ff;
   font-weight:800;
   font-size: 3rem;
   font-family: "Consolas";
