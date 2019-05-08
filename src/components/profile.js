@@ -23,7 +23,7 @@ const Profile = () =>(
                 <a className="profile-link icon github" href="https://github.com/Ta2Rim" target="_blank">github</a>
                 <a className="profile-link icon twitter" href="https://twitter.com/taeshindev" target="_blank">twitter</a>
             </header>
-            <p className="profile-comment">// persistent Web Front-end Developer who loves to make creative and beautiful stuff</p>
+            <p className="profile-comment">// persistent Web Front-end Developer who love to make creative and beautiful stuff</p>
         </div>
     </div>
 )
