@@ -1,10 +1,11 @@
 
-export const KeyboardGenerator = (function() {
+export const KeyboardGenerator =    (function() {
     var Keyboard;
-    var U = 3; //standard of keycap length
+    var U = 4; //standard of keycap length
     Keyboard = function(opt = {}) {
       this.layoutType = opt.layoutType || 'FULL';
       this.sizeType = opt.sizeType || 'MINI';
+      debugger;
       this.targetElement = opt.targetElement || document.querySelector('#kbd');
     }
     
@@ -27,11 +28,11 @@ export const KeyboardGenerator = (function() {
       var templates = {
         'function' : function() {
           var f = keyTemplate('function');
-          return new Array(17).fill('').map(f).join('')
+          return new Array(12).fill('').map(f).join('')
         },
         'rowE' : function() {
           var f = keyTemplate('rowE');
-          return new Array(12).fill('').map(f).join('')
+          return new Array(14).fill('').map(f).join('')
         },
         'ctrl' : function() {
           var f = keyTemplate('ctrl');
@@ -41,7 +42,7 @@ export const KeyboardGenerator = (function() {
       
       switch(this.layoutType) {
         case 'FULL':
-            t.push(key('esc') + templates['function']());
+            t.push(key('esc') + templates['function']() + templates['ctrl']());
             t.push(templates['rowE']() + key('rowE' ,1.5) + templates['ctrl']());
             
           break;

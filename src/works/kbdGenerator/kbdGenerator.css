@@ -1,0 +1,39 @@
+/*reset*/
+* {
+    padding: 0;
+    margin:0;
+  }
+  /*reset*/
+  .keyboard * {
+      box-sizing: border-box;
+  }
+  .keyboard{
+    white-space : nowrap;
+  }
+  .keyboard .row{
+    display:block;
+  }
+  .keyboard .row:after{
+    content:'';
+    display:block;
+    clear:both;
+  }
+  .keyboard.mini .keycap{
+    border-width:1px;
+    display:block;
+    float:left;
+    border:1px solid #000;
+  }
+  .keyboard.full .keycap.function:nth-child(4n + 2){
+    margin-left:3px;
+  }
+  .keyboard.full .keycap.function:nth-child(n + 15) {
+      margin-right:3px;
+  }
+  .keyboard.full .keycap.esc{
+    margin-right:1px;
+  }
+
+  .function {
+    background : red;
+  }
