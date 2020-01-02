@@ -1,13 +1,13 @@
-import React from "react"
-import { Link } from "gatsby"
-
-import Layout from "../components/layout"
 import Image from "../components/image"
-import SEO from "../components/seo"
+import Layout from "../components/layout"
+import { Link } from "gatsby"
 import PostLink from '../components/post-link'
+import React from "react"
+import SEO from "../components/seo"
+
 const IndexPage = ({
   data : {
-    allMarkdownRemark : {edges}
+    allMdx : {edges}
   }
 }) => {
   const Posts = edges
@@ -26,8 +26,8 @@ export default IndexPage
 
 
 export const pageQuery = graphql`
-  query {
-    allMarkdownRemark(sort: { order: DESC, fields: [frontmatter___date] }) {
+  query blogIndex {
+    allMdx {
       edges {
         node {
           id

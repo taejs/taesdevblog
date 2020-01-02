@@ -2,9 +2,10 @@ module.exports = {
   siteMetadata: {
     title: `<Tae'sDevBlog>`,
     description: `What is "development"? I think it means all behaviors occur in tech across the board`,
-    author: `@gatsbyjs`,
+    author: `@taeshindev`,
   },
   plugins: [
+    `gatsby-plugin-mdx`,
     `gatsby-plugin-react-helmet`,
     {
       resolve: `gatsby-source-filesystem`,
@@ -34,21 +35,8 @@ module.exports = {
         path : `${__dirname}/src/markdowns`
       }
     },
-    `gatsby-transformer-remark`,
-    {
-      resolve: "gatsby-transformer-remark",
-      options: {
-        plugins: [
-          {
-            resolve:"@weknow/gatsby-remark-codepen",
-            options: {
-              theme: "dark",
-              height: 400
-            }
-          }
-        ]
-      }
-    }
+    `gatsby-theme-blog`,
+    `gatsby-theme-waves`,
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.dev/offline
     // `gatsby-plugin-offline`,

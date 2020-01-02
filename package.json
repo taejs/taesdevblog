@@ -5,16 +5,21 @@
   "version": "0.1.0",
   "author": "Kyle Mathews <mathews.kyle@gmail.com>",
   "dependencies": {
+    "@mdx-js/mdx": "^1.5.3",
+    "@mdx-js/react": "^1.5.3",
     "@reach/router": "^1.2.1",
     "@weknow/gatsby-remark-codepen": "^0.1.0",
-    "gatsby": "^2.3.34",
+    "deepmerge": "^4.2.2",
+    "gatsby": "^2.13.13",
     "gatsby-image": "^2.0.41",
     "gatsby-plugin-manifest": "^2.0.29",
+    "gatsby-plugin-mdx": "^1.0.64",
     "gatsby-plugin-offline": "^2.0.25",
     "gatsby-plugin-react-helmet": "^3.0.12",
     "gatsby-plugin-sharp": "^2.0.35",
     "gatsby-source-filesystem": "^2.0.33",
-    "gatsby-transformer-remark": "^2.3.12",
+    "gatsby-theme-blog": "^1.2.18",
+    "gatsby-theme-waves": "^0.1.5",
     "gatsby-transformer-sharp": "^2.1.18",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
@@ -24,7 +29,7 @@
     "react-spring": "^8.0.20"
   },
   "devDependencies": {
-    "prettier": "^1.17.0"
+    "prettier": "^1.19.1"
   },
   "keywords": [
     "gatsby"
