@@ -1,0 +1,152 @@
+---
+path: "/monorepo-with-lerna"
+date: "2020-01-03"
+title: "Lerna로 js 다중 프로젝트 관리하기"
+keywords : ["lerna", "monorepo", "js", "다중 프로젝트", "레르나", "러나", "모노레포"]
+---
+
+Lerna@3.20.2 기준으로 작성된 문서입니다.
+
+## 문제상황
+사내에서 프론트 공통으로 사용하는 npm 모듈이 몇가지 존재하는데, 여러 사람들이 협업하면서 각 모듈의 의존성이 분화해가는 현상을 발견했다.
+아래와 같이 모듈 별로 버전 관리가 되고 있었다.
+
+```
+프로젝트 A의 devDependencies
+모듈 a : "1.0.0"
+모듈 b : "6.23.0"
+
+프로젝트 B의 devDependencies
+모듈 a : "1.0.10"
+모듈 b : "7.5.5"
+모듈 c : "2.0.4"
+
+프로젝트 C의 devDependencies
+모듈 a : "1.2.18"
+모듈 c : "2.0.4"
+```
+
+각 모듈의 담당자가 다르기에 이 차이를 시스템적으로 따라잡게 하지 않고서는 맞춰지는 것이 불가능해보였다.
+물론 각 모듈이 다르게 버전을 가져가는 것이 패키지 매니징의 강점이기는 하지만, 
+devDependencies의 경우 이야기가 다르다. 팀원들의 node 버전 규칙에도 맞춰야 하고 eslint config 같은 경우에도 모든 패키지에 버전을 계속 업데이트 해주는게 맞다.
+또한 중복된 버전이 존재할 때에는 프로젝트 마다 똑같은 모듈을 다운로드 받아야 하는 문제 또한 있었다.
+
+npm에서는 버전을 명시하지 않고 의존 모듈을 설치할 경우 가장 최신버전이 설치되기 때문에 라이브러리가 생겨날수록 더 큰 문제가 발생할 것이라고 생각했다.
+그러던 도중 lerna 라는 오픈소스를 발견하게 되었다.
+
+
+## Lerna
+현대 개발에서 방대한 양의 코드를 관리하기 여러개로 분리시켜 놓았으나, 이제 그 쪼개진 패키지들을 관리, 테스트하는데 있어서 복잡성이 증대되는 문제가 발생했다. 이 문제를 해결하기 위해 나온 방식이 그 패키지들을 분리된 채로 다시 한곳에 모으는 방법이며 monorepo라고도 불린다.
+
+Lerna는 git과 npm을 통해 js monorepo를 관리하게 해주는 도구이다. babel이나 CRA 등 유명한 오픈소스에서도 사용하고 있어 안정성은 충분하다고 생각했다.
+Lerna는 사용 자유도가 높아 사용 목적에 맞게 커맨드를 실행하면 된다.
+Lerna 사용 가이드라인을 제시하는 [lerna-wizard cli](https://github.com/webuniverseio/lerna-wizard)를 사용할 수도 있다.
+
+Lerna에서는 최상위 프로젝트를 "root"로, 하위의 패키지들을 "leaf"로 정의하고 있다.
+root에서 devDependencies와 scripts를 제어하는 것이다.
+
+## 간단한 사용방법
+
+설정 처음에는 대상 디렉토리에 `lerna init` 커맨드를 실행해야한다. 그러면 lerna.json 설정파일과 /packages 디렉토리가 만들어진다.
+
+```
+lerna.json 초기 상태
+{
+  "packages": [
+    "packages/*"
+  ],
+  "version": "0.0.0"
+}
+```
+
+packages config에는 leaf 패키지들이 존재하는 경로를 리스트 형태로 작성하면 된다.
+권장되는 사항은 `packages/*`에 leaf 패키지들을 위치시키는 형태지만, 필수사항은 아니다.
+
+Lerna에서 프로젝트를 2가지 모드로 설정할 수 있는데 `lerna init`로 초기화하면 기본적으로 Fixed/Locked 모드이며,
+`lerna init --independent`로 초기화하면 Independent 모드이다.
+둘의 차이점은  `lerna publish`를 실행할 때 Fixed/Locked 모드는 모든 leaf 패키지들에 대해 같은 버전을 적용하는데 반해,
+independent 모드는 각 패키지마다 다르게 설정하는 것이다.
+
+### 한번에 같은 스크립트 실행하기
+`lerna run`과 `lerna exec`를 통해 leaf 패키지들에 대해 한번에 스크립트를 실행할 수 있다.
+`lerna run`은 npm script를 실행하고 `lerna exc`는 OS의 커맨드를 직접 사용한다는 점에서 다르다.
+
+`lerna run test` 커맨드를 실행하면, 각 leaf 패키지들의 package.json 에 설정된 test script가 실행된다.
+해당 스크립트가 leaf 패키지에 없는 경우에는 에러가 발생하며 즉시 중단된다.
+
+### 한번에 배포하기
+`lerna publish` 명령어를 통해 leaf 패키지들을 한번에 배포할 수 있다.
+npm에 배포되어 있지 않더라도 git에만 올라가있으면 `lerna publish from-git`를 사용해 배포할 수 있다. git tag에 버전을 명시해준다.
+
+Fixed/Locked 모드 : lerna.json의 버전만 변경하며 모든 leaf 패키지에 적용된다.
+
+```commands
+$ npx lerna publish
+? Select a new version (currently 0.0.0) (Use arrow keys)
+> Patch (0.0.1)
+  Minor (0.1.0)
+  Major (1.0.0)
+  Prepatch (0.0.1-alpha.0)
+  Preminor (0.1.0-alpha.0)
+  Premajor (1.0.0-alpha.0)
+  Custom Prerelease
+  Custom Version
+
+```
+
+결과
+```commands
+Changes:
+ - @test/a: 1.0.2 => 0.0.1
+ - @test/b: 1.0.1 => 0.0.1
+ 
+Successfully published:
+ - @test/a@0.0.1
+ - @test/b@0.0.1
+```
+
+Independent 모드 : 모든 leaf 패키지에 대해 각각의 버전으로 업데이트 할 수 있다.
+
+```
+$ npx lerna publish
+? Select a new version for @test/a (currently 1.0.2) (Use arrow keys)
+> Patch (1.0.3)
+? Select a new version for @test/a (currently 1.0.2) Patch (1.0.3)
+? Select a new version for @test/b (currently 1.0.1) (Use arrow keys)
+> Patch (1.0.2)
+  Minor (1.1.0)
+  Major (2.0.0)
+  Prepatch (1.0.2-alpha.0)
+  Preminor (1.1.0-alpha.0)
+  Premajor (2.0.0-alpha.0)
+  Custom Prerelease
+  Custom Version
+
+```
+
+```
+Changes:
+ - @test/a: 1.0.2 => 1.0.3
+ - @test/b: 1.0.1 => 1.0.2
+ 
+Successfully published:
+ - @test/a@1.0.3
+ - @test/b@1.0.2
+```
+
+
+### Common devDependencies 생성
+`lerna link convert` 명령어를 통해 leaf에서 root로 devDependencies를 가져오게 된다.
+[실제 코드](https://github.com/lerna/lerna/blob/master/commands/link/index.js)를 확인해봤을 때,
+`lerna link convert` 실행 시  `convertLinksToFileSpecs()` 함수가 실행된다.
+이 함수는 디렉토리 그래프를 순회하면서 해당 디렉토리를 의존하는 패키지의 의존성을 변경한다.
+패키지 입장에서는 패키지 안의 node_modules로 참조하던 것을 상위 디렉토리 안의 node_modules로 참조하도록 변경된 것이다.
+이런식으로 (config 상에서 packages로 지정해준)최하위단부터 최상위까지 devDependencies가 옮겨져 온다.
+
+그러나 같은 의존성을 가진 경우 최신버전을 선택하는 것이 아닌 그래프 상에서 가장 마지막에 순회한 디렉토리의 버전으로 덮어씌워지기 때문에  `lerna link convert` 실행 후 한번 더 버전을 확인하는것이 좋아보인다.
+
+## 해결과제
+각 모듈에 테스트 코드를 생성해
+breaking changes가 일어날 때 publish 되지 못하도록 만들어야 한다.
+
+## 향후계획
