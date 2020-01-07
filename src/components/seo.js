@@ -77,7 +77,9 @@ function SEO({ description, lang, meta, keywords, title }) {
             : []
         )
         .concat(meta)}
-    />
+    >
+      <meta name="google-site-verification" content="sJHd56NZH4pVwdTJDfExwVzGgvOsn9s43ypHbfMosl8" />
+    </Helmet>
   )
 }
 
