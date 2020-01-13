@@ -1,0 +1,66 @@
+---
+path: "/i18n-process"
+date: "2020-01-14"
+title: "다국어 처리 프로세스 구축기"
+keywords : ["다국어 처리", "다국어", "i18n", "zing", "serge", "internalization", "오픈소스", "무료 다국어 처리 툴"]
+---
+사내에서 다국어처리 요구사항이 발생한 후, 반년 정도의 시간을 거쳐 작업을 마무리하고 있는 중이다. 
+이 경험과 감정을 기록하고 공유하기 위해서 글을 남긴다.
+
+다들 그렇게 시작하듯이 나또한 다국어 처리 경험이 없는 상태였고, 다국어 처리가 적용된 기존 프로젝트도 없어서 처음부터 기반을 다져야 했었다.
+내가 만든 프로세스가 앞으로 만들어질 프로젝트들에도 적용된다는 생각을 하니 책임감이 더 생겼다.
+
+입사한 뒤로 여느때보다도 구글링을 가장 많이 한 시기였던 것 같다.
+어떤 방식으로 번역가/기획자와 소통할 것인가에 대해서 중점을 두고 리서치를 했다.
+내가 찾고자한 자료는 "개발 방법"이 아닌 "프로세스 구축"이었기에 특히나 어려웠다.
+그렇기 때문에 한번에 벤치마킹할 모델을 찾지는 못했고,
+갈기갈기 찢어진 종이를 다시 맞춰가는 것처럼 여러 정보의 단편을 가지고 조합하는 과정을 거쳤다.
+
+사실.. 이 시스템은 비용으로 해결이 가능하다.
+[Transifex](https://www.transifex.com/features/translation-tools/)나 [crowdin](https://crowdin.com/) 같은 다국어 처리용 SaaS들이 많기 때문에
+주어진 프로세스대로 사용하기만 하면 간단하게 끝난다. 
+그렇지만 개발자는 한정된 자원을 이용해 답을 찾아내는 사람이라는 생각을 가지고 즐겁게 리서치 했던 것 같다. 이제 동료들과 함께했던 작업에 대해 설명해보려고 한다.
+
+1. 진행률을 확인할 수 있다.
+2. 미번역 
+3. 검색이 빠르다
+4. evernote에서 사용 중이다.  
+gitter도 답변해주는 evernote 직원이 있고, 업데이트가 계속 진행중이다.
+
+
+
+그 외에도 고려할 사항은 정말 많다.
+- 번역 맥락/문체 공유
+- 문화/법령 차이
+- 코드스트링 네이밍
+- 메일&SMS 발송
+- 이미지에 글자가 들어있는 경우
+- 글자 길이 차이로 인해 생기는 UI 깨짐현상
+- 기획시 번역에 들어가는 시간 추가 소요
+
+## 도움이 되었던 링크
+- [앱 로컬라이징을 위한 공동번역 툴]
+(https://minieetea.com/2014/03/archives/1475)  
+이 포스트를 통해 zing을 알게되었다. 재밌는건 내용에 zing이라는 툴은 언급되지 않았다는 사실이다. 처음에는 pootle을 사용해서 구축하려고 했었고 구축 도중 동료개발자분이 버그가 너무 많다고 말씀하시는걸 듣고 이 구절이 번쩍 떠올랐다.
+```Pootle 버그가 있다는데, 에버노트가 수정해서 Github에 올려두었다고도 함..```  
+찾아보니 이 결과물이 단순 버그 수정판이 아닌 새로 만들어낸 수준의 zing이었다.  
+이 글을 빌어 정말 감사드린다.
+
+- [Android언어 리소스 자동화] (https://tiii.tistory.com/22)  
+구글 스프레드시트를 통해 언어 리소스를 자동업데이트하는 아이디어
+
+- [TTA 소프트웨어 시험 인증 연구소](http://sw.tta.or.kr/service/esil_it.jsp)
+국가 공인 기관에서 국제화, 현지화에 대한 테스팅과 컨설팅을 해준다.
+실제로 이곳에서 몇가지 장비를 빌려서 테스트했었다.
+
+- [Localization Guide] (http://docs.translatehouse.org/projects/localization-guide/en/latest/guide/start.html)  
+pootle을 만든 translatehouse라는 조직에서 작성한 국제화 가이드
+
+- [Udacity : Localization essential](https://classroom.udacity.com/courses/ud610)  
+개발보다는 프로젝트 관리쪽에 초점을 둔 무료 강의, 번역에 대한 새로운 관점(비용)에 눈뜨게 되었다.
+
+- [Localization with Google Spreadsheets] (https://medium.com/jungmut-blog/localization-with-google-spreadsheets-7756d7076ac)  
+구글 스프레드 시트 기능을 100% 활용해 번역하는 방법
+
+- [다국어 상황을 고려한 UI 디자인]
+(https://medium.com/ui-ux-post-translator/%EB%8B%A4%EA%B5%AD%EC%96%B4-%EC%83%81%ED%99%A9%EC%9D%84-%EA%B3%A0%EB%A0%A4%ED%95%9C-ui-%EB%94%94%EC%9E%90%EC%9D%B8-6b89e07795cf)
