@@ -134,7 +134,6 @@ Successfully published:
  - @test/b@1.0.2
 ```
 
-<<<<<<< HEAD
 ### Common devDependencies 생성
 `lerna link convert` 명령어를 통해 leaf에서 root로 devDependencies를 가져오게 된다. 실제코드를 동작은 다음과 같다.
 
@@ -146,18 +145,3 @@ Successfully published:
 
 ## 해결과제
 각 모듈에 테스트 코드를 생성해 라이브러리단에서 breaking changes가 일어날 때 publish 되지 못하도록 만들어야 한다.
-=======
-
-### Common devDependencies 생성
-`lerna link convert` 명령어를 통해 leaf에서 root로 devDependencies를 가져오게 된다.
-[실제 코드](https://github.com/lerna/lerna/blob/master/commands/link/index.js)를 확인해봤을 때,
-`lerna link convert` 실행 시  `convertLinksToFileSpecs()` 함수가 실행된다.
-이 함수는 디렉토리 그래프를 순회하면서 해당 디렉토리를 의존하는 패키지의 의존성을 변경한다.
-패키지 입장에서는 패키지 안의 node_modules로 참조하던 것을 상위 디렉토리 안의 node_modules로 참조하도록 변경된 것이다.
-이런식으로 (config 상에서 packages로 지정해준)최하위단부터 최상위까지 devDependencies가 옮겨져 온다.
-
-그러나 같은 의존성을 가진 경우 최신버전을 선택하는 것이 아닌 그래프 상에서 가장 마지막에 순회한 디렉토리의 버전으로 덮어씌워지기 때문에  `lerna link convert` 실행 후 한번 더 버전을 확인하는것이 좋아보인다.
-
-## 해결과제
-각 모듈에 테스트 코드를 생성해
-breaking changes가 일어날 때 publish 되지 못하도록 만들어야 한다.
