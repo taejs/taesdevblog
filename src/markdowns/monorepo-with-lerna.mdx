@@ -139,8 +139,11 @@ Successfully published:
 
 `lerna link convert` 실행 시 lerna.json에서 설정한 대상 packge들에 대해서
  npm-package-arg로 파싱한  package.json 리스트가 flatten 되어있는 targetGraph라는 이름의 리스트를 순회하면서 2가지 작업을한다.
+ 
 1. localDependents라고 하는 현재 패키지를 참조하고 있는 패키지들이 현재 패키지를 상대경로로 참조하도록 변경하는 것이고 (path.relative() 이용)
+
 2. devDependencies가 있는경우 hoisted라는 객체에 합치는 작업을 한다.
+
 그렇기 때문에 같은 의존성을 가진 경우 최신버전을 선택하는 것이 아닌 그래프 상에서 가장 마지막에 순회한 디렉토리의 버전으로 덮어씌워지기 때문에  `lerna link convert` 실행 후 한번 더 버전을 확인하는것이 좋아보인다.
 
 ## 해결과제
