@@ -46,6 +46,7 @@ keywords : ["다국어 처리", "다국어", "i18n", "zing", "serge", "internali
 - 다운로드할때마다 요금이 발생한다.
 
 3. evernote zing + serge (선택)
+
 evernote에서 만든 다국어 처리 오픈소스로, 찾아본 것 중에 가장 좋았다.
 
 zing은 번역가가 스트링을 수정할 수 있는 Saas이고 Django로 만들어져있다. 소스 스트링은 수정이 불가능하다.
@@ -63,6 +64,7 @@ serge는 po파일 <-> 다른 파일 포맷(json, properties, xml 등) 간에 변
 공식 gitter에 질문에 대해서 답해주는 evernote 직원이 있고, 업데이트 또한 계속 진행중이다.
 
 ## 적용
+![적용 방식을 도식화](https://user-images.githubusercontent.com/41318449/74604982-5b5ab880-50bb-11ea-92ff-ccf8a4ea380c.PNG)
 
 다국어 처리 되어있지 않은 프로젝트이기 때문에 가장 처음에는 구글 스프레드 시트에 모든 스트링을 옮겼다. 
 이후에 소스스트링(우리같은 경우에는 ko)을 어떤 파일 형식으로 변환해야한다. 우리는 스프레드 시트 내용을 json으로 파싱하는 작업을 했다.
@@ -76,8 +78,7 @@ serge를 통해 변경된 po파일이 다시 json으로 변환된다.
 
 이 json파일도 자동으로 가져오고싶다는 니즈가 있어서 처음에는 spring cloud server를 두어서 CORS 걱정없이 가져오려고 했는데,
 어차피 개발,st서버에서만 사용할 거라 S3 서버에 올리고 cloudfront에서 https 접근 허용해두고 사용하는게 더 관리포인트가 적은거같아서 이렇게 했다.
-
-S3서버에 올리는 작업은 우리가 사용하는 VCS가 bitbucket이라서 bitbucket pipeline을 사용해서 커밋될때마다 업로드 한다.
+S3서버에 올리는 작업은 우리가 사용하는 코드 저장소가 bitbucket이라서 bitbucket pipeline을 사용해서 커밋될때마다 업로드 한다.
 
 
 ## 결과
