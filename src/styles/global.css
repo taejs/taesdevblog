@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans+KR:300,400,500,700,900&subset=korean');
 @import url('https://db.onlinewebfonts.com/c/1db29588408eadbd4406aae9238555eb?family=Consolas');
-@import url('https://fonts.googleapis.com/css?family=Noto+Serif+KR:300,400,600&subset=korean');
 
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -34,9 +33,6 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
 	line-height: 1;
-}
-ol, ul {
-	list-style: none;
 }
 blockquote, q {
 	quotes: none;
@@ -89,7 +85,7 @@ h3{
 	line-height: 2rem;
 }
 p{
-	font-family: 'Noto Serif KR', serif;
+	font-family: 'Noto Sans KR', serif;
 	line-height: 1.7rem;
 	color : #333;
 	margin : 20px 0px;
