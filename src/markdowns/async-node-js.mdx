@@ -29,6 +29,7 @@ Node.js 공식 페이지는 Node.js를 `an asynchronous event-driven JavaScript 
 
 Node.js는 비동기 작업을 Reactor패턴을 사용해 처리했다.
 `event demultiplexer`와 `event queue` 두개의 계층을 두었다.
+
 1. I/O가 일어나면 `event demultiplexer`에 등록하면서 즉시 논블로킹으로 제어를 반환하고
 2. 이 I/O가 완료되면 `event queue`에 등록하여
 3. 이벤트 루프가 각 이벤트에 해당하는 핸들러를 호출하는 방식이다.
