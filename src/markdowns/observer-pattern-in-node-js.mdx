@@ -4,3 +4,16 @@ date: "2020-05-28"
 title: "node.js 속의 옵저버 패턴"
 keywords : ["node.js", "옵저버 패턴"]
 ---
+node.js에서 주요하게 사용하는 여러 패턴중 하나로 옵저버 패턴이 있다.
+옵저버 패턴은 Observer와 Subject라는 역할을 분리해 상태 변화가 일어났을 때 Subject가 Observer에게 알릴 수 있도록 정의한 패턴이다.
+
+node.js에서는 옵저버패턴을 EventEmitter 클래스에 적용했다.
+이를 사용하려면 EventEmitter의 인스턴스를 만든 후 emit() 메소드로 이벤트를 발생시키는 코드를 넣는다.
+그 후 EventEmitter 인스턴스를 리턴하면 이 함수를 사용하는 코드에서 리스너를 등록해  이벤트가 일어났을 때 어떤 동작을 할지 설정할 수 있게 된다.
+
+EventEmitter를 사용할 때 주의할 점은, 비동기로 이벤트를 발생시킬 때 throw를 사용하면 이벤트 루프에서 손실될 수 있다는 점이다.
+그렇기 때문에 규약에 따라 `error`라는 이름의 이벤트를 발생시키고 Error 객체를 전달하면 된다.
+
+
+https://github.com/nodejs/node/blob/v12.14.1/lib/events.js
+
