@@ -18,7 +18,36 @@ EventEmitter를 사용할 때 주의할 점은, 비동기로 이벤트를 발생
 - EventEmitter는 다중 Observer가 동일한 알림을 수신할 수 있다
 - 작업의 성공 여부에 따라 특정함수가 실행 될 수도, 실행되지 않을 수도 있다.
 
-https://github.com/nodejs/node/blob/v12.14.1/lib/events.js
+[node.js의 실제 코드](https://github.com/nodejs/node/blob/v12.14.1/lib/events.js)를 참고하여 간단하게 EventEmitter를 구현해보았다.
 
 ```
+    class EventEmitter {
+        event : Map<string, Array<Function>>;
+
+        on(type, listener) {
+            this.addEventListener(type, listener);
+        }
+
+        emit(type, ...args) {
+            const event = this.event;
+            const array = event.get(type);
+
+            event.forEach((listener)=>Reflect.apply(listener, this, args));
+        }
+
+        addEventListener(type, listener) {
+            const event = this.event;
+            if(!event.has(type)) event.set(type, new Array());
+
+            const array = event.get(type);
+            array.push(handler);
+        }
+
+        removeEventListener(type, listener) {
+            const event = this.event;
+            const array = event.get(type);
+
+            event.set(type, array.filter(list => list === listener));
+        }
+    }
 ``
