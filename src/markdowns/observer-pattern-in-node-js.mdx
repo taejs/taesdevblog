@@ -1,5 +1,5 @@
 ---
-path: "/async-node-js"
+path: "/observer-pattern-in-node-js"
 date: "2020-05-28"
 title: "node.js 속의 옵저버 패턴"
 keywords : ["node.js", "옵저버 패턴"]
@@ -14,6 +14,11 @@ node.js에서는 옵저버패턴을 EventEmitter 클래스에 적용했다.
 EventEmitter를 사용할 때 주의할 점은, 비동기로 이벤트를 발생시킬 때 throw를 사용하면 이벤트 루프에서 손실될 수 있다는 점이다.
 그렇기 때문에 규약에 따라 `error`라는 이름의 이벤트를 발생시키고 Error 객체를 전달하면 된다.
 
+콜백패턴과의 차이점은
+- EventEmitter는 다중 Observer가 동일한 알림을 수신할 수 있다
+- 작업의 성공 여부에 따라 특정함수가 실행 될 수도, 실행되지 않을 수도 있다.
 
 https://github.com/nodejs/node/blob/v12.14.1/lib/events.js
 
+```
+``
