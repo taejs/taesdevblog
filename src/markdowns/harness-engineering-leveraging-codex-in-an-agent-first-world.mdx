@@ -1,0 +1,174 @@
+---
+path: "/harness-engineering-leveraging-codex-in-an-agent-first-world"
+date: "2026-02-23"
+title: "Harness engineering: leveraging Codex in an agent-first world"
+keywords: ["openai", "codex", "agent", "ai engineering", "harness engineering", "AGENTS.md", "llm", "software architecture"]
+---
+
+> This post is based on OpenAI's engineering blog: [Harness engineering: leveraging Codex in an agent-first world](https://openai.com/index/harness-engineering/)
+
+## Overview
+
+OpenAI's Harness team built an internal production system over five months with **zero manually-written code**, using Codex agents to generate approximately **one million lines of code across 1,500 pull requests**.
+
+This article explores the methodology they call **Harness Engineering** — a discipline where human engineers stop writing code and instead focus on designing environments, specifying intent, and building feedback loops that allow AI agents to build and maintain complex software at scale.
+
+---
+
+## The Shift in Engineering Work
+
+The lack of hands-on human coding introduced a fundamentally different kind of engineering work, focused on **systems, scaffolding, and leverage**.
+
+Early progress was slower than expected — not because Codex was incapable, but because the environment was underspecified. The agent lacked the tools, abstractions, and internal structure required to make progress toward high-level goals.
+
+> The primary job of the engineering team became enabling the agents to do useful work.
+
+In practice, this meant working **depth-first**: breaking down larger goals into smaller building blocks (design, code, review, test, etc.), prompting the agent to construct those blocks, and using them to unlock more complex tasks.
+
+When something failed, the fix was almost never "try harder." Because the only way to make progress was to get Codex to do the work, human engineers always stepped into the failing task and asked:
+
+> **"What capability is missing, and how do we make it both legible and enforceable for the agent?"**
+
+Human engineers now:
+
+- Prioritize work and translate user feedback into acceptance criteria
+- Validate outcomes from agent-generated pull requests
+- Identify missing tools, guardrails, or documentation when agents struggle
+- Feed discoveries back into the repository as improvements to the harness
+
+---
+
+## AGENTS.md: A Map, Not an Encyclopedia
+
+Context management is one of the biggest challenges in making agents effective at large and complex tasks.
+
+The team first tried the "one big AGENTS.md" approach. It failed in predictable ways:
+
+- Context is a scarce resource — a giant instruction file crowds out the task, the code, and the relevant docs
+- The agent either misses key constraints or starts optimizing for the wrong ones
+- Too much guidance becomes non-guidance: when everything is "important," nothing is
+- Instructions rot instantly as rules go stale
+- Hard to verify mechanically
+
+**The solution**: use `AGENTS.md` as a **map with pointers** to a structured `docs/` directory containing design docs, execution plans, product specs, and references. This enables **progressive disclosure** — agents discover context as needed rather than loading everything at once.
+
+`AGENTS.md` tells the agent what it needs to know about the project:
+
+- Build steps and testing commands
+- Coding conventions
+- Architectural constraints
+- Common pitfalls
+
+What makes `AGENTS.md` "load-bearing infrastructure" rather than just another doc that rots is the **usage pattern**:
+
+> You don't write it once and forget it — you update it every time the agent does something wrong.
+
+Any time an agent makes a mistake, you engineer a solution so the agent never makes that mistake again. For simple things — the agent running the wrong commands or finding the wrong APIs — that means updating the `AGENTS.md`.
+
+---
+
+## Architecture: Rigid Layers, Strict Boundaries
+
+Documentation alone doesn't keep a fully agent-generated codebase coherent. The team built the application around a **rigid architectural model** where each business domain is divided into a fixed set of layers, with strictly validated dependency directions and a limited set of permissible edges.
+
+Dependencies flow in a controlled sequence:
+
+```
+Types → Config → Repo → Service → Runtime → UI
+```
+
+Cross-cutting concerns (auth, connectors, telemetry, feature flags) enter through a single explicit interface called **Providers**. Anything else is disallowed and enforced mechanically.
+
+By enforcing **invariants** — not micromanaging implementations — they let agents ship fast without undermining the foundation. For example, they require Codex to parse data shapes at the boundary, but are not prescriptive on how that happens.
+
+> This is the kind of architecture you usually postpone until you have hundreds of engineers. With coding agents, it's an early prerequisite: the constraints are what allow speed without decay or architectural drift.
+
+---
+
+## Enforcement Mechanisms
+
+Architectural constraints are enforced mechanically via **custom linters** (themselves generated by Codex) and **structural tests**.
+
+The enforcement includes:
+
+- Statically enforced structured logging
+- Naming conventions for schemas and types
+- File size limits
+- Platform-specific reliability requirements
+- Dependency direction validation
+
+A particularly clever approach: **custom linter error messages that double as remediation instructions**. When an agent violates an architectural constraint, the error message doesn't just flag the violation — it tells the agent how to fix it. The tooling teaches the agent while it works.
+
+---
+
+## The Three Harness Components
+
+The harness components mix deterministic and LLM-based approaches across three categories:
+
+### 1. Context Engineering
+
+Continuously enhanced knowledge base in the codebase, plus agent access to dynamic context like:
+
+- Observability data (logs, metrics, spans)
+- Browser navigation
+- Cross-linked design and architecture documentation
+- A structured `docs/` directory serving as the single source of truth
+
+### 2. Architectural Constraints
+
+Monitored not only by LLM-based agents, but also by deterministic systems:
+
+- Custom linters (written by Codex)
+- Structural tests
+- CI validation for documentation links and consistency
+
+### 3. Garbage Collection
+
+Agents that run periodically to find inconsistencies and fight entropy:
+
+- Scanning for outdated documentation
+- Detecting violations of architectural constraints
+- Maintaining alignment between code and specs over time
+
+---
+
+## Observability & Telemetry
+
+Agents use telemetry to monitor application performance and reproduce bugs across isolated development environments:
+
+- **Logs** — structured, with naming conventions enforced by linters
+- **Metrics** — for monitoring and alerting
+- **Spans** — for distributed tracing and debugging
+
+Agents can query observability data directly, giving them a feedback loop for diagnosing failures without human intervention.
+
+---
+
+## What's Still Unknown
+
+The team acknowledges key open questions:
+
+- How does architectural coherence evolve over **years** in a fully agent-generated system?
+- Where does human judgment add the most leverage, and how do you encode it so it **compounds**?
+- How will the system evolve as models continue to become more capable?
+
+> What's become clear: building software still demands discipline, but the discipline shows up more in the **scaffolding** rather than the code.
+
+The tooling, abstractions, and feedback loops that keep the codebase coherent are increasingly important. The most difficult challenges now center on designing environments, feedback loops, and control systems that help agents accomplish the goal:
+
+**Build and maintain complex, reliable software at scale.**
+
+---
+
+## Key Takeaways
+
+| Concept | Traditional Engineering | Harness Engineering |
+|---|---|---|
+| Primary output | Code | Scaffolding & constraints |
+| Documentation | Supplementary | Load-bearing infrastructure |
+| Architecture | Evolves over time | Strict from day one |
+| Error handling | Fix the code | Fix the harness |
+| Context delivery | Monolithic docs | Progressive disclosure via maps |
+| Enforcement | Code review | Automated linters + structural tests |
+
+The shift from writing code to building harnesses is not just a workflow change — it's a different definition of what good engineering looks like in an agent-first world.
