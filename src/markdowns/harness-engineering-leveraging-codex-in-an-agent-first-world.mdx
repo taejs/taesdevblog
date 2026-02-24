@@ -65,6 +65,41 @@ What makes `AGENTS.md` "load-bearing infrastructure" rather than just another do
 
 Any time an agent makes a mistake, you engineer a solution so the agent never makes that mistake again. For simple things — the agent running the wrong commands or finding the wrong APIs — that means updating the `AGENTS.md`.
 
+**Example: A well-structured AGENTS.md**
+
+```markdown
+# Project Map
+
+## Quick Start
+- Build: `npm run build`
+- Test:  `npm test`
+- Lint:  `npm run lint`
+
+## Architecture
+See docs/architecture.md for the full layer diagram.
+Each domain follows: Types → Config → Repo → Service → Runtime → UI
+Dependency violations are caught by the linter — see docs/layers.md.
+
+## Coding Conventions
+- All schemas are named `*Schema` (enforced by linter)
+- Structured logging only — no `console.log` (enforced by linter)
+- Max file size: 300 lines (enforced by linter)
+- Parse external data at the boundary using zod — see docs/parsing.md
+
+## Common Pitfalls
+- Do NOT import from a higher layer (e.g., Service importing from UI)
+- Do NOT add cross-cutting concerns inline — use Providers (docs/providers.md)
+- Do NOT write raw SQL — use the Repo layer abstractions
+
+## Docs Index
+- docs/architecture.md   — Layer diagram and dependency rules
+- docs/providers.md      — How to add auth, connectors, feature flags
+- docs/parsing.md        — Boundary parsing patterns
+- docs/observability.md  — Logging, metrics, span conventions
+```
+
+Notice the pattern: short, scannable, and every rule points to a deeper doc. The agent loads only what it needs.
+
 ---
 
 ## Architecture: Rigid Layers, Strict Boundaries
@@ -80,6 +115,69 @@ Types → Config → Repo → Service → Runtime → UI
 Cross-cutting concerns (auth, connectors, telemetry, feature flags) enter through a single explicit interface called **Providers**. Anything else is disallowed and enforced mechanically.
 
 By enforcing **invariants** — not micromanaging implementations — they let agents ship fast without undermining the foundation. For example, they require Codex to parse data shapes at the boundary, but are not prescriptive on how that happens.
+
+**Example: Folder structure per domain**
+
+```
+src/
+└── billing/
+    ├── types.ts        # Layer 1 — shared types, no imports from this domain
+    ├── config.ts       # Layer 2 — can import from types only
+    ├── repo.ts         # Layer 3 — can import from types, config
+    ├── service.ts      # Layer 4 — can import from types, config, repo
+    ├── runtime.ts      # Layer 5 — can import from types..service
+    └── ui.tsx          # Layer 6 — can import from all layers above
+```
+
+**Example: Boundary parsing with zod (types layer)**
+
+```typescript
+// billing/types.ts
+import { z } from "zod";
+
+export const InvoiceSchema = z.object({
+  id: z.string().uuid(),
+  amount: z.number().positive(),
+  currency: z.enum(["USD", "EUR", "KRW"]),
+  status: z.enum(["pending", "paid", "failed"]),
+  createdAt: z.string().datetime(),
+});
+
+export type Invoice = z.infer<typeof InvoiceSchema>;
+```
+
+```typescript
+// billing/repo.ts
+import { InvoiceSchema, type Invoice } from "./types";
+
+export async function getInvoice(id: string): Promise<Invoice> {
+  const raw = await db.query("SELECT * FROM invoices WHERE id = $1", [id]);
+  // Parse at the boundary — the rest of the codebase trusts the type
+  return InvoiceSchema.parse(raw.rows[0]);
+}
+```
+
+**Example: Providers for cross-cutting concerns**
+
+```typescript
+// providers.ts  (the single entry point for cross-cutting concerns)
+export interface Providers {
+  auth: AuthProvider;
+  telemetry: TelemetryProvider;
+  featureFlags: FeatureFlagProvider;
+}
+
+// service.ts — receives providers, never imports them directly
+export function createBillingService(providers: Providers) {
+  return {
+    async chargeUser(userId: string, amount: number) {
+      const user = await providers.auth.getUser(userId);
+      providers.telemetry.span("billing.charge", { userId, amount });
+      // ...
+    },
+  };
+}
+```
 
 > This is the kind of architecture you usually postpone until you have hundreds of engineers. With coding agents, it's an early prerequisite: the constraints are what allow speed without decay or architectural drift.
 
@@ -98,6 +196,87 @@ The enforcement includes:
 - Dependency direction validation
 
 A particularly clever approach: **custom linter error messages that double as remediation instructions**. When an agent violates an architectural constraint, the error message doesn't just flag the violation — it tells the agent how to fix it. The tooling teaches the agent while it works.
+
+**Example: Custom ESLint rule with agent-friendly error messages**
+
+```javascript
+// eslint-rules/no-layer-violation.js
+module.exports = {
+  create(context) {
+    const LAYER_ORDER = ["types", "config", "repo", "service", "runtime", "ui"];
+
+    return {
+      ImportDeclaration(node) {
+        const currentFile = context.getFilename();
+        const importPath = node.source.value;
+
+        const currentLayer = LAYER_ORDER.find((l) => currentFile.includes(`/${l}`));
+        const importedLayer = LAYER_ORDER.find((l) => importPath.includes(`/${l}`));
+
+        if (!currentLayer || !importedLayer) return;
+
+        if (LAYER_ORDER.indexOf(importedLayer) > LAYER_ORDER.indexOf(currentLayer)) {
+          context.report({
+            node,
+            message: [
+              `Layer violation: '${currentLayer}' must not import from '${importedLayer}'.`,
+              `Allowed imports for '${currentLayer}': ${
+                LAYER_ORDER.slice(0, LAYER_ORDER.indexOf(currentLayer)).join(", ") || "none"
+              }.`,
+              `Fix: move shared logic into the '${currentLayer}' layer or a lower layer.`,
+              `See docs/layers.md for the full dependency rules.`,
+            ].join(" "),
+          });
+        }
+      },
+    };
+  },
+};
+```
+
+When Codex violates a rule, the error output looks like:
+
+```
+error  Layer violation: 'config' must not import from 'service'.
+       Allowed imports for 'config': types.
+       Fix: move shared logic into the 'config' layer or a lower layer.
+       See docs/layers.md for the full dependency rules.
+```
+
+The agent reads this, follows the pointer to `docs/layers.md`, and self-corrects — no human required.
+
+**Example: Structural test for dependency directions**
+
+```typescript
+// tests/architecture.test.ts
+import { describe, it, expect } from "vitest";
+import { glob } from "glob";
+import fs from "fs";
+
+const LAYER_ORDER = ["types", "config", "repo", "service", "runtime", "ui"];
+
+describe("Architectural layer constraints", () => {
+  const files = glob.sync("src/**/*.ts");
+
+  files.forEach((file) => {
+    it(`${file} respects layer dependencies`, () => {
+      const content = fs.readFileSync(file, "utf-8");
+      const currentLayer = LAYER_ORDER.find((l) => file.includes(`/${l}`));
+      if (!currentLayer) return;
+
+      const currentIndex = LAYER_ORDER.indexOf(currentLayer);
+      const imports = content.match(/from ["']\.\/(\w+)/g) || [];
+
+      imports.forEach((imp) => {
+        const importedLayer = LAYER_ORDER.find((l) => imp.includes(l));
+        if (!importedLayer) return;
+        const importedIndex = LAYER_ORDER.indexOf(importedLayer);
+        expect(importedIndex).toBeLessThan(currentIndex);
+      });
+    });
+  });
+});
+```
 
 ---
 
@@ -130,6 +309,26 @@ Agents that run periodically to find inconsistencies and fight entropy:
 - Detecting violations of architectural constraints
 - Maintaining alignment between code and specs over time
 
+**Example: A garbage collection agent prompt (run on a cron)**
+
+```markdown
+You are a documentation consistency agent. Your job is to fight entropy.
+
+Tasks:
+1. Read every file in docs/ and find any reference to a file, function, or
+   module that no longer exists in src/. List all broken references.
+
+2. Read AGENTS.md. For every rule listed, check whether there is a linter rule
+   or structural test that enforces it. List any rules that are only documented
+   but not mechanically enforced.
+
+3. For each issue found, open a pull request with the fix:
+   - Update or remove stale doc references
+   - Add a linter rule for any unenforceable AGENTS.md rule
+
+Do not ask for clarification. Work autonomously and open PRs for all findings.
+```
+
 ---
 
 ## Observability & Telemetry
@@ -141,6 +340,47 @@ Agents use telemetry to monitor application performance and reproduce bugs acros
 - **Spans** — for distributed tracing and debugging
 
 Agents can query observability data directly, giving them a feedback loop for diagnosing failures without human intervention.
+
+**Example: Structured logging enforced by a linter**
+
+```typescript
+// ✅ Correct — structured log
+logger.info("invoice.charge.success", {
+  userId,
+  invoiceId,
+  amount,
+  durationMs,
+});
+
+// ❌ Rejected by linter — unstructured
+console.log(`Charged user ${userId} for invoice ${invoiceId}`);
+```
+
+```javascript
+// eslint-rules/no-console-log.js — tells the agent exactly how to fix it
+module.exports = {
+  create(context) {
+    return {
+      CallExpression(node) {
+        if (
+          node.callee.object?.name === "console" &&
+          node.callee.property?.name === "log"
+        ) {
+          context.report({
+            node,
+            message: [
+              "Use structured logging instead of console.log.",
+              "Import logger from '@/lib/logger' and call logger.info(eventName, fields).",
+              "Event names use dot notation: 'domain.action.result' (e.g., 'invoice.charge.success').",
+              "See docs/observability.md for the full logging guide.",
+            ].join(" "),
+          });
+        }
+      },
+    };
+  },
+};
+```
 
 ---
 
